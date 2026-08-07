@@ -1,6 +1,7 @@
 # Superstore Sales Analysis
 
-## Was macht dieses Projekt?
+# Was macht dieses Projekt?
+# Phase 1: Datenanalyse mit Pandas
 
 In diesem Projekt analysiere ich die Verkaufsdaten eines Superstores mit Python und Pandas.
 
@@ -39,6 +40,42 @@ Zuerst habe ich die CSV-Datei mit Pandas geladen und die Daten kontrolliert. Dan
 7. Regionen und Kundensegmente verglichen.
 8. die monatliche Entwicklung von Umsatz und Gewinn analysiert.
 9. Ergebnisse mit Tabellen und Diagrammen dargestellt.
+
+
+# Phase 2: PostgreSQL-Integration
+
+Nach der Datenanalyse habe ich den Datensatz in einer PostgreSQL-Datenbank gespeichert.
+
+Dafür habe ich:
+
+1. eine PostgreSQL-Datenbank namens `superstore_db` erstellt,
+2. Python mithilfe von SQLAlchemy mit PostgreSQL verbunden,
+3. den Pandas-DataFrame als Tabelle `superstore_sales` gespeichert,
+4. die erfolgreiche Übertragung mit einer SQL-Abfrage kontrolliert.
+
+Verwendete SQL-Abfrage:
+
+```sql
+SELECT *
+FROM superstore_sales
+LIMIT 10;
+```
+
+Diese Abfrage zeigt die ersten zehn Datensätze der Tabelle an.
+
+Projektablauf:
+
+`CSV → Pandas → SQLAlchemy → PostgreSQL → SQL Query`
+
+## Verwendete Technologien
+
+* Python
+* Pandas
+* Matplotlib
+* PostgreSQL
+* pgAdmin 4
+* SQLAlchemy
+* Jupyter Notebook
 
 ## Wichtigste Ergebnisse
 
