@@ -191,10 +191,3 @@ Possible next steps include:
 
 ---
 
-## 🔒 Wichtiger Sicherheitshinweis vor dem Upload
-
-> **OpenAI API Key auf keinen Fall in GitHub hochladen!**  
-> In deinem Notebook ist das bereits gut gelöst, weil du ihn mit `getpass()` eingibst und der eigentliche Key nicht im Code steht.
-
-* **Benennung:** Den Begriff **„First AI Data Agent Prototype“** beizubehalten ist ideal. Das ist für GitHub professionell und technisch ehrlich, da es transparent kommuniziert, dass es sich um einen kontrollierten Prototypen und noch keinen vollautonom agierenden Agenten handelt.
-* **Integration & Git Commit:** Im nächsten Schritt können wir festlegen, an welcher Stelle Phase 3 im bestehenden `README.md` eingefügt wird und welcher Commit-Name (z. B. `docs: add phase 3 AI data agent prototype section`) am besten dazu passt.
