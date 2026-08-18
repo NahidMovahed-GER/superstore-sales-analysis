@@ -96,7 +96,7 @@ Projektablauf:
 
 Die Analyse zeigt, dass ein hoher Umsatz nicht automatisch einen hohen Gewinn bedeutet. Besonders hohe Rabatte sowie einzelne Produkte und Unterkategorien reduzieren die Rentabilität. Das Unternehmen sollte hohe Rabatte überprüfen und verlustreiche Produkte genauer untersuchen.
 
-## Phase 3: First AI Data Agent Prototype
+# Phase 3: First AI Data Agent Prototype
 
 After analyzing the Superstore dataset with Pandas, storing the data in PostgreSQL, and creating a dashboard with Apache Superset, the next step was to introduce the first AI component.
 
