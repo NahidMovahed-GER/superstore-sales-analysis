@@ -1,13 +1,14 @@
 # Superstore Sales Analysis
 
-## Was macht dieses Projekt?
+Dieses Projekt zeigt die schrittweise Entwicklung einer Datenanalyse zu
+einem ersten **AI-Data-Agent-Prototyp**.
 
-In diesem Projekt analysiere ich die Verkaufsdaten eines Superstores und
-entwickle die Datenverarbeitung schrittweise weiter -- von der
-klassischen Datenanalyse über PostgreSQL und Reporting bis zu einem
-ersten Prototyp eines AI Data Agents.
+Ausgehend von einem Superstore-Datensatz werden die Daten zunächst mit
+Python und Pandas analysiert, anschließend in PostgreSQL gespeichert,
+mit Apache Superset visualisiert und schließlich über ein Sprachmodell
+mit natürlichsprachlichen Fragen abgefragt.
 
-Der bisherige Projektablauf:
+## Projektübersicht
 
 ``` text
 CSV
@@ -17,15 +18,41 @@ Pandas
 PostgreSQL
  ├──→ Apache Superset → Dashboard
  ↓
-LLM → SQL-Sicherheitsprüfung → PostgreSQL → verständliche Antwort
+LLM → SQL-Generierung → Sicherheitsprüfung → PostgreSQL
+                                             ↓
+                                      Abfrageergebnis
+                                             ↓
+                                            LLM
+                                             ↓
+                                  Verständliche Antwort
 ```
+
+## Projektstruktur
+
+``` text
+superstore-sales-analysis/
+│
+├── README.md
+├── data/
+│   └── Superstore.csv
+│
+├── notebooks/
+│   └── superstore_sales_analysis.ipynb
+│
+└── docs/
+    └── images/
+        ├── superstore_linkedin.png
+        └── superset-dashboard.png
+```
+
+------------------------------------------------------------------------
 
 ## Phase 1: Datenanalyse mit Pandas
 
-In der ersten Phase analysiere ich die Verkaufsdaten mit Python und
-Pandas.
+In der ersten Phase werden die Verkaufsdaten mit Python und Pandas
+untersucht.
 
-Das Ziel ist herauszufinden:
+### Fragestellungen
 
 -   Wie entwickeln sich Umsatz und Gewinn?
 -   Welche Kategorien und Produkte sind profitabel?
@@ -34,7 +61,7 @@ Das Ziel ist herauszufinden:
 -   Welche Regionen und Kundensegmente sind besonders erfolgreich?
 -   In welchen Monaten ist das Geschäft stark oder schwach?
 
-### Welche Daten werden verwendet?
+### Verwendete Daten
 
 Der Datensatz enthält unter anderem:
 
@@ -47,19 +74,19 @@ Der Datensatz enthält unter anderem:
 -   Region
 -   Kundensegment
 
-### Was habe ich gemacht?
+### Durchführung
 
-Zuerst habe ich die CSV-Datei mit Pandas geladen und die Daten
-kontrolliert. Danach habe ich:
+Zunächst wurde die CSV-Datei mit Pandas geladen und kontrolliert.
+Anschließend wurden:
 
-1.  Umsatz und Gewinn nach Jahr analysiert.
-2.  Kategorien und Unterkategorien verglichen.
-3.  Gewinnmargen berechnet.
-4.  Produkte mit dem höchsten Umsatz und Gewinn gefunden.
-5.  Produkte und Unterkategorien mit Verlust identifiziert.
-6.  den Zusammenhang zwischen Rabatt und Gewinn untersucht.
-7.  Regionen und Kundensegmente verglichen.
-8.  die monatliche Entwicklung von Umsatz und Gewinn analysiert.
+1.  Umsatz und Gewinn nach Jahr analysiert,
+2.  Kategorien und Unterkategorien verglichen,
+3.  Gewinnmargen berechnet,
+4.  Produkte mit dem höchsten Umsatz und Gewinn ermittelt,
+5.  Produkte und Unterkategorien mit Verlust identifiziert,
+6.  der Zusammenhang zwischen Rabatt und Gewinn untersucht,
+7.  Regionen und Kundensegmente verglichen,
+8.  die monatliche Entwicklung von Umsatz und Gewinn analysiert,
 9.  Ergebnisse mit Tabellen und Diagrammen dargestellt.
 
 ### Wichtigste Ergebnisse
@@ -81,24 +108,23 @@ kontrolliert. Danach habe ich:
 
 Die Analyse zeigt, dass ein hoher Umsatz nicht automatisch einen hohen
 Gewinn bedeutet. Besonders hohe Rabatte sowie einzelne Produkte und
-Unterkategorien reduzieren die Rentabilität. Das Unternehmen sollte hohe
-Rabatte überprüfen und verlustreiche Produkte genauer untersuchen.
+Unterkategorien reduzieren die Rentabilität.
 
 ------------------------------------------------------------------------
 
 ## Phase 2: PostgreSQL-Integration
 
-Nach der Datenanalyse habe ich den Datensatz in einer
-PostgreSQL-Datenbank gespeichert.
+Nach der Datenanalyse wurde der Datensatz in einer PostgreSQL-Datenbank
+gespeichert.
 
-Dafür habe ich:
+Dafür wurden:
 
-1.  eine PostgreSQL-Datenbank namens `superstore_db` erstellt,
+1.  die PostgreSQL-Datenbank `superstore_db` erstellt,
 2.  Python mithilfe von SQLAlchemy mit PostgreSQL verbunden,
-3.  den Pandas-DataFrame als Tabelle `superstore_sales` gespeichert,
+3.  der Pandas-DataFrame als Tabelle `superstore_sales` gespeichert,
 4.  die erfolgreiche Übertragung mit einer SQL-Abfrage kontrolliert.
 
-Verwendete SQL-Abfrage:
+Beispiel:
 
 ``` sql
 SELECT *
@@ -106,9 +132,7 @@ FROM superstore_sales
 LIMIT 10;
 ```
 
-Diese Abfrage zeigt die ersten zehn Datensätze der Tabelle an.
-
-### Projektablauf
+### Datenfluss
 
 ``` text
 CSV → Pandas → SQLAlchemy → PostgreSQL → SQL-Abfrage
@@ -118,45 +142,44 @@ CSV → Pandas → SQLAlchemy → PostgreSQL → SQL-Abfrage
 
 ## Phase 3: Reporting mit Apache Superset
 
-Nach der Speicherung der analysierten Daten in PostgreSQL habe ich die
-Datenbank mit Apache Superset verbunden.
+Im nächsten Schritt wurde die PostgreSQL-Datenbank mit Apache Superset
+verbunden.
 
-Ziel dieser Phase war es, auf Basis der bestehenden PostgreSQL-Daten ein
-einfaches BI- und Reporting-Dashboard aufzubauen, ohne zusätzliche
-Visualisierungen mit Python programmieren zu müssen.
+Ziel war es, auf Basis der bereits vorhandenen Daten ein einfaches
+BI-Dashboard zu erstellen, ohne die Visualisierungen erneut mit Python
+programmieren zu müssen.
 
-Ich habe ein **Superstore Sales Dashboard** mit drei Visualisierungen
-erstellt:
+Das **Superstore Sales Dashboard** enthält:
 
 -   Sales by Category
 -   Sales over Time
 -   Profit by Category
 
-### Architektur
+### Datenfluss
 
 ``` text
-PostgreSQL
-    ↓
-Apache Superset
-    ↓
-Superstore Sales Dashboard
+PostgreSQL → Apache Superset → Dashboard
 ```
 
-Das Dashboard ermöglicht einen schnellen Überblick über Umsatz und
-Gewinn nach Kategorien sowie über die zeitliche Umsatzentwicklung.
+### Dashboard
+
+![Superstore Sales Dashboard](docs/images/superset-dashboard.png)
+
+Apache Superset ermöglicht damit eine zusätzliche Reporting-Schicht auf
+den bereits in PostgreSQL gespeicherten Daten.
 
 ------------------------------------------------------------------------
 
 ## Phase 4: Erster AI-Data-Agent-Prototyp
 
-Nach Datenanalyse, Datenbankintegration und Reporting habe ich den
-ersten KI-Baustein in das Projekt integriert.
+Nach Datenanalyse, Datenbankintegration und Reporting wurde der erste
+KI-Baustein integriert.
 
-Das Ziel dieser Phase ist, Fragen zu den vorhandenen Verkaufsdaten in
-natürlicher Sprache stellen zu können, ohne die benötigte SQL-Abfrage
-selbst schreiben zu müssen.
+Ziel ist es, Fragen über die Verkaufsdaten in natürlicher Sprache
+stellen zu können, ohne die benötigte SQL-Abfrage manuell schreiben zu
+müssen.
 
-### Architektur
+### Ablauf
 
 ``` text
 Frage in natürlicher Sprache
@@ -176,7 +199,7 @@ SQL-Sicherheitsprüfung
 Verständliche Antwort
 ```
 
-### Wie funktioniert der Prototyp?
+### Funktionsweise
 
 1.  Der Benutzer stellt eine Frage in natürlicher Sprache.
 
@@ -184,10 +207,10 @@ Verständliche Antwort
 
     > Welche Region hatte den höchsten Umsatz?
 
-2.  Die Frage wird zusammen mit Informationen über die vorhandene
-    Tabelle und relevante Spalten an ein OpenAI-Sprachmodell übergeben.
+2.  Die Frage wird zusammen mit Informationen über die Tabelle und
+    relevante Spalten an ein OpenAI-Sprachmodell übergeben.
 
-3.  Das Modell erzeugt daraus eine passende PostgreSQL-`SELECT`-Abfrage.
+3.  Das Modell generiert eine passende PostgreSQL-`SELECT`-Abfrage.
 
     Beispiel:
 
@@ -199,27 +222,25 @@ Verständliche Antwort
     LIMIT 1;
     ```
 
-4.  Vor der Ausführung wird die generierte SQL-Abfrage durch eine
+4.  Vor der Ausführung wird das generierte SQL durch eine
     Sicherheitsprüfung kontrolliert.
 
     Der aktuelle Prototyp erlaubt ausschließlich lesende
     `SELECT`-Abfragen und soll verhindern, dass generiertes SQL Daten in
     der Datenbank verändert.
 
-5.  Die geprüfte Abfrage wird gegen die vorhandene PostgreSQL-Datenbank
-    ausgeführt.
+5.  Die validierte Abfrage wird gegen PostgreSQL ausgeführt.
 
-6.  Das Datenbankergebnis wird anschließend wieder an das Sprachmodell
+6.  Das Datenbankergebnis wird anschließend an das Sprachmodell
     übergeben und in eine kurze, verständliche Antwort umgewandelt.
 
     Beispiel:
 
     > Die Region West erzielte mit 725.457,82 den höchsten Umsatz.
 
-### Tests
+### Bisherige Tests
 
-Der Prototyp wurde bisher mit verschiedenen natürlichsprachlichen Fragen
-getestet, darunter:
+Der Prototyp wurde unter anderem mit folgenden Fragen getestet:
 
 -   Welche Kategorie hatte den höchsten Gewinn?
 -   Welche Region hatte den höchsten Umsatz?
@@ -242,27 +263,12 @@ Antwort in natürlicher Sprache
 
 ### Aktueller Stand
 
-Der aktuelle Stand ist bewusst ein kleiner erster Prototyp und noch kein
-vollständiger autonomer AI Data Agent.
+Der aktuelle Stand ist bewusst ein erster, kontrollierter Prototyp und
+noch kein vollständiger autonomer AI Data Agent.
 
-Der Schwerpunkt liegt zunächst auf einem kontrollierten und
-nachvollziehbaren **Natural-Language-to-SQL-Workflow**. Weitere
-Agentenfunktionen sollen schrittweise ergänzt werden, wenn sie für den
-konkreten Anwendungsfall sinnvoll sind.
-
-### Nächste Schritte
-
-Mögliche nächste Entwicklungsschritte sind:
-
--   SQL-Validierung und Sicherheit weiter verbessern
--   mehr Arten analytischer Fragen unterstützen
--   Datenbankschema automatisch berücksichtigen
--   Fehlerbehandlung verbessern
--   AI-Agent-Logik aus dem Analyse-Notebook in eigene Komponenten
-    auslagern
--   weitere Agentenfunktionen schrittweise ergänzen
--   zusätzliche Data-Engineering-Werkzeuge erst einsetzen, wenn der
-    konkrete Anwendungsfall sie benötigt
+Der Schwerpunkt liegt zunächst auf einem nachvollziehbaren
+**Natural-Language-to-SQL-Workflow**. Weitere Agentenfunktionen sollen
+schrittweise ergänzt werden.
 
 ------------------------------------------------------------------------
 
@@ -279,9 +285,28 @@ Mögliche nächste Entwicklungsschritte sind:
 -   Apache Superset
 -   OpenAI API
 
+------------------------------------------------------------------------
+
+## Nächste Schritte
+
+Geplante bzw. mögliche Weiterentwicklungen:
+
+-   SQL-Validierung und Sicherheit verbessern
+-   weitere analytische Fragen unterstützen
+-   Datenbankschema automatisch berücksichtigen
+-   Fehlerbehandlung verbessern
+-   AI-Agent-Logik aus dem Analyse-Notebook in eigene Komponenten
+    auslagern
+-   weitere Agentenfunktionen schrittweise ergänzen
+-   zusätzliche Data-Engineering-Werkzeuge nur dann einsetzen, wenn der
+    konkrete Anwendungsfall sie benötigt
+
 ## Projektstatus
 
-Das Projekt wird schrittweise zu einem AI Data Agent weiterentwickelt.
-Der aktuelle Stand umfasst Datenanalyse, persistente Speicherung in
-PostgreSQL, BI-Reporting mit Apache Superset sowie einen ersten
-kontrollierten Natural-Language-to-SQL-Prototyp.
+Das Projekt umfasst aktuell:
+
+**Datenanalyse → PostgreSQL → BI-Reporting → erster
+Natural-Language-to-SQL-Prototyp**
+
+Das langfristige Ziel ist die schrittweise Weiterentwicklung zu einem AI
+Data Agent.
