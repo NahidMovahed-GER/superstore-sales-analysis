@@ -1,61 +1,106 @@
 # Superstore Sales Analysis
 
-# Was macht dieses Projekt?
-# Phase 1: Datenanalyse mit Pandas
+## Was macht dieses Projekt?
 
-In diesem Projekt analysiere ich die Verkaufsdaten eines Superstores mit Python und Pandas.
+In diesem Projekt analysiere ich die Verkaufsdaten eines Superstores und
+entwickle die Datenverarbeitung schrittweise weiter -- von der
+klassischen Datenanalyse über PostgreSQL und Reporting bis zu einem
+ersten Prototyp eines AI Data Agents.
+
+Der bisherige Projektablauf:
+
+``` text
+CSV
+ ↓
+Pandas
+ ↓
+PostgreSQL
+ ├──→ Apache Superset → Dashboard
+ ↓
+LLM → SQL-Sicherheitsprüfung → PostgreSQL → verständliche Antwort
+```
+
+## Phase 1: Datenanalyse mit Pandas
+
+In der ersten Phase analysiere ich die Verkaufsdaten mit Python und
+Pandas.
 
 Das Ziel ist herauszufinden:
 
-- Wie entwickeln sich Umsatz und Gewinn?
-- Welche Kategorien und Produkte sind profitabel?
-- Welche Produkte verursachen Verluste?
-- Welchen Einfluss haben Rabatte auf den Gewinn?
-- Welche Regionen und Kundensegmente sind besonders erfolgreich?
-- In welchen Monaten ist das Geschäft stark oder schwach?
+-   Wie entwickeln sich Umsatz und Gewinn?
+-   Welche Kategorien und Produkte sind profitabel?
+-   Welche Produkte verursachen Verluste?
+-   Welchen Einfluss haben Rabatte auf den Gewinn?
+-   Welche Regionen und Kundensegmente sind besonders erfolgreich?
+-   In welchen Monaten ist das Geschäft stark oder schwach?
 
-## Welche Daten werden verwendet?
+### Welche Daten werden verwendet?
 
 Der Datensatz enthält unter anderem:
 
-- Bestelldatum
-- Produktname und Produktkategorie
-- Umsatz (`Sales`)
-- Gewinn (`Profit`)
-- Rabatt (`Discount`)
-- verkaufte Menge (`Quantity`)
-- Region
-- Kundensegment
+-   Bestelldatum
+-   Produktname und Produktkategorie
+-   Umsatz (`Sales`)
+-   Gewinn (`Profit`)
+-   Rabatt (`Discount`)
+-   verkaufte Menge (`Quantity`)
+-   Region
+-   Kundensegment
 
-## Was habe ich gemacht?
+### Was habe ich gemacht?
 
-Zuerst habe ich die CSV-Datei mit Pandas geladen und die Daten kontrolliert. Danach habe ich:
+Zuerst habe ich die CSV-Datei mit Pandas geladen und die Daten
+kontrolliert. Danach habe ich:
 
-1. Umsatz und Gewinn nach Jahr analysiert.
-2. Kategorien und Unterkategorien verglichen.
-3. Gewinnmargen berechnet.
-4. Produkte mit dem höchsten Umsatz und Gewinn gefunden.
-5. Produkte und Unterkategorien mit Verlust identifiziert.
-6. Den Zusammenhang zwischen Rabatt und Gewinn untersucht.
-7. Regionen und Kundensegmente verglichen.
-8. die monatliche Entwicklung von Umsatz und Gewinn analysiert.
-9. Ergebnisse mit Tabellen und Diagrammen dargestellt.
+1.  Umsatz und Gewinn nach Jahr analysiert.
+2.  Kategorien und Unterkategorien verglichen.
+3.  Gewinnmargen berechnet.
+4.  Produkte mit dem höchsten Umsatz und Gewinn gefunden.
+5.  Produkte und Unterkategorien mit Verlust identifiziert.
+6.  den Zusammenhang zwischen Rabatt und Gewinn untersucht.
+7.  Regionen und Kundensegmente verglichen.
+8.  die monatliche Entwicklung von Umsatz und Gewinn analysiert.
+9.  Ergebnisse mit Tabellen und Diagrammen dargestellt.
 
+### Wichtigste Ergebnisse
 
-# Phase 2: PostgreSQL-Integration
+-   Umsatz und Gewinn sind insgesamt gestiegen.
+-   2014 war das erfolgreichste Jahr.
+-   Technology ist die profitabelste Kategorie.
+-   Furniture erzielt viel Umsatz, aber nur wenig Gewinn.
+-   Tables und Bookcases verursachen Verluste.
+-   Rabatte über 20 % sind insgesamt nicht rentabel.
+-   West ist die profitabelste Region.
+-   Central hat die niedrigste Gewinnmarge.
+-   Consumer bringt den höchsten Gesamtgewinn.
+-   Home Office hat die höchste Gewinnmarge.
+-   November und Dezember sind besonders starke Monate.
+-   Juli 2011 und Januar 2012 waren die einzigen Verlustmonate.
 
-Nach der Datenanalyse habe ich den Datensatz in einer PostgreSQL-Datenbank gespeichert.
+### Fazit der Datenanalyse
+
+Die Analyse zeigt, dass ein hoher Umsatz nicht automatisch einen hohen
+Gewinn bedeutet. Besonders hohe Rabatte sowie einzelne Produkte und
+Unterkategorien reduzieren die Rentabilität. Das Unternehmen sollte hohe
+Rabatte überprüfen und verlustreiche Produkte genauer untersuchen.
+
+------------------------------------------------------------------------
+
+## Phase 2: PostgreSQL-Integration
+
+Nach der Datenanalyse habe ich den Datensatz in einer
+PostgreSQL-Datenbank gespeichert.
 
 Dafür habe ich:
 
-1. eine PostgreSQL-Datenbank namens `superstore_db` erstellt,
-2. Python mithilfe von SQLAlchemy mit PostgreSQL verbunden,
-3. den Pandas-DataFrame als Tabelle `superstore_sales` gespeichert,
-4. die erfolgreiche Übertragung mit einer SQL-Abfrage kontrolliert.
+1.  eine PostgreSQL-Datenbank namens `superstore_db` erstellt,
+2.  Python mithilfe von SQLAlchemy mit PostgreSQL verbunden,
+3.  den Pandas-DataFrame als Tabelle `superstore_sales` gespeichert,
+4.  die erfolgreiche Übertragung mit einer SQL-Abfrage kontrolliert.
 
 Verwendete SQL-Abfrage:
 
-```sql
+``` sql
 SELECT *
 FROM superstore_sales
 LIMIT 10;
@@ -63,131 +108,180 @@ LIMIT 10;
 
 Diese Abfrage zeigt die ersten zehn Datensätze der Tabelle an.
 
-Projektablauf:
+### Projektablauf
 
-`CSV → Pandas → SQLAlchemy → PostgreSQL → SQL Query`
+``` text
+CSV → Pandas → SQLAlchemy → PostgreSQL → SQL-Abfrage
+```
 
-## Verwendete Technologien
+------------------------------------------------------------------------
 
-* Python
-* Pandas
-* Matplotlib
-* PostgreSQL
-* pgAdmin 4
-* SQLAlchemy
-* Jupyter Notebook
+## Phase 3: Reporting mit Apache Superset
 
-## Wichtigste Ergebnisse
+Nach der Speicherung der analysierten Daten in PostgreSQL habe ich die
+Datenbank mit Apache Superset verbunden.
 
-- Umsatz und Gewinn sind insgesamt gestiegen.
-- 2014 war das erfolgreichste Jahr.
-- Technology ist die profitabelste Kategorie.
-- Furniture erzielt viel Umsatz, aber nur wenig Gewinn.
-- Tables und Bookcases verursachen Verluste.
-- Rabatte über 20 % sind insgesamt nicht rentabel.
-- West ist die profitabelste Region.
-- Central hat die niedrigste Gewinnmarge.
-- Consumer bringt den höchsten Gesamtgewinn.
-- Home Office hat die höchste Gewinnmarge.
-- November und Dezember sind besonders starke Monate.
-- Juli 2011 und Januar 2012 waren die einzigen Verlustmonate.
+Ziel dieser Phase war es, auf Basis der bestehenden PostgreSQL-Daten ein
+einfaches BI- und Reporting-Dashboard aufzubauen, ohne zusätzliche
+Visualisierungen mit Python programmieren zu müssen.
 
-## Fazit
+Ich habe ein **Superstore Sales Dashboard** mit drei Visualisierungen
+erstellt:
 
-Die Analyse zeigt, dass ein hoher Umsatz nicht automatisch einen hohen Gewinn bedeutet. Besonders hohe Rabatte sowie einzelne Produkte und Unterkategorien reduzieren die Rentabilität. Das Unternehmen sollte hohe Rabatte überprüfen und verlustreiche Produkte genauer untersuchen.
+-   Sales by Category
+-   Sales over Time
+-   Profit by Category
 
-# Phase 3: First AI Data Agent Prototype
+### Architektur
 
-After analyzing the Superstore dataset with Pandas, storing the data in PostgreSQL, and creating a dashboard with Apache Superset, the next step was to introduce the first AI component.
+``` text
+PostgreSQL
+    ↓
+Apache Superset
+    ↓
+Superstore Sales Dashboard
+```
 
-The goal of this phase is to allow users to ask questions about the data in natural language without writing SQL manually.
+Das Dashboard ermöglicht einen schnellen Überblick über Umsatz und
+Gewinn nach Kategorien sowie über die zeitliche Umsatzentwicklung.
 
----
+------------------------------------------------------------------------
 
-### Architecture
+## Phase 4: Erster AI-Data-Agent-Prototyp
 
-```text
-Natural Language Question
+Nach Datenanalyse, Datenbankintegration und Reporting habe ich den
+ersten KI-Baustein in das Projekt integriert.
+
+Das Ziel dieser Phase ist, Fragen zu den vorhandenen Verkaufsdaten in
+natürlicher Sprache stellen zu können, ohne die benötigte SQL-Abfrage
+selbst schreiben zu müssen.
+
+### Architektur
+
+``` text
+Frage in natürlicher Sprache
         ↓
-      LLM
+       LLM
         ↓
-Generated PostgreSQL Query
+Generierte PostgreSQL-Abfrage
         ↓
-SQL Safety Validation
+SQL-Sicherheitsprüfung
         ↓
    PostgreSQL
         ↓
- Query Result
+ Abfrageergebnis
         ↓
-      LLM
+       LLM
         ↓
-Natural Language Answer
+Verständliche Antwort
 ```
 
----
+### Wie funktioniert der Prototyp?
 
-### How it Works
+1.  Der Benutzer stellt eine Frage in natürlicher Sprache.
 
-1. **Natural Language Input:** The user asks a question in natural language.
-   * *Example:* "Which region had the highest sales?"
-2. **SQL Generation:** The question is sent to an OpenAI language model together with information about the available table and columns.
-3. **Query Formulation:** The model generates a PostgreSQL `SELECT` query.
-   * *Example:*
-     ```sql
-     SELECT "Region", SUM("Sales") AS total_sales
-     FROM superstore_sales
-     GROUP BY "Region"
-     ORDER BY total_sales DESC
-     LIMIT 1;
-     ```
-4. **Safety Validation:** Before execution, the generated SQL is validated by a safety check.
-   * The current prototype **only allows read-only `SELECT` queries** and prevents generated SQL from modifying the database.
-5. **Database Execution:** The validated query is executed against the existing PostgreSQL database.
-6. **Answer Synthesis:** The database result is passed back to the language model and converted into a short, human-readable answer.
-   * *Example Result:* "The West region achieved the highest sales with 725,457.82."
+    Beispiel:
 
----
+    > Welche Region hatte den höchsten Umsatz?
+
+2.  Die Frage wird zusammen mit Informationen über die vorhandene
+    Tabelle und relevante Spalten an ein OpenAI-Sprachmodell übergeben.
+
+3.  Das Modell erzeugt daraus eine passende PostgreSQL-`SELECT`-Abfrage.
+
+    Beispiel:
+
+    ``` sql
+    SELECT "Region", SUM("Sales") AS total_sales
+    FROM superstore_sales
+    GROUP BY "Region"
+    ORDER BY total_sales DESC
+    LIMIT 1;
+    ```
+
+4.  Vor der Ausführung wird die generierte SQL-Abfrage durch eine
+    Sicherheitsprüfung kontrolliert.
+
+    Der aktuelle Prototyp erlaubt ausschließlich lesende
+    `SELECT`-Abfragen und soll verhindern, dass generiertes SQL Daten in
+    der Datenbank verändert.
+
+5.  Die geprüfte Abfrage wird gegen die vorhandene PostgreSQL-Datenbank
+    ausgeführt.
+
+6.  Das Datenbankergebnis wird anschließend wieder an das Sprachmodell
+    übergeben und in eine kurze, verständliche Antwort umgewandelt.
+
+    Beispiel:
+
+    > Die Region West erzielte mit 725.457,82 den höchsten Umsatz.
 
 ### Tests
 
-The prototype was successfully tested with different natural-language questions, including:
-* *Which category had the highest profit?*
-* *Which region had the highest sales?*
+Der Prototyp wurde bisher mit verschiedenen natürlichsprachlichen Fragen
+getestet, darunter:
 
-For both questions, the model generated the appropriate SQL query, the query passed the safety validation, PostgreSQL returned the result, and the result was converted back into a natural-language answer.
+-   Welche Kategorie hatte den höchsten Gewinn?
+-   Welche Region hatte den höchsten Umsatz?
 
----
+Bei beiden Tests wurde der vollständige Ablauf erfolgreich durchgeführt:
 
-### Current Status
+``` text
+Frage
+ ↓
+SQL-Generierung
+ ↓
+Sicherheitsprüfung
+ ↓
+PostgreSQL-Abfrage
+ ↓
+Datenbankergebnis
+ ↓
+Antwort in natürlicher Sprache
+```
 
-This is intentionally a **small first prototype** rather than a complete autonomous AI agent.
+### Aktueller Stand
 
-The current focus is on building a controlled and understandable **Natural-Language-to-SQL workflow** before adding more advanced agent capabilities.
+Der aktuelle Stand ist bewusst ein kleiner erster Prototyp und noch kein
+vollständiger autonomer AI Data Agent.
 
----
+Der Schwerpunkt liegt zunächst auf einem kontrollierten und
+nachvollziehbaren **Natural-Language-to-SQL-Workflow**. Weitere
+Agentenfunktionen sollen schrittweise ergänzt werden, wenn sie für den
+konkreten Anwendungsfall sinnvoll sind.
 
-### Tech Stack
+### Nächste Schritte
 
-* **Python**
-* **Pandas**
-* **PostgreSQL**
-* **SQLAlchemy**
-* **OpenAI API**
-* **Jupyter Notebook**
-* **Docker**
-* **Apache Superset**
+Mögliche nächste Entwicklungsschritte sind:
 
----
+-   SQL-Validierung und Sicherheit weiter verbessern
+-   mehr Arten analytischer Fragen unterstützen
+-   Datenbankschema automatisch berücksichtigen
+-   Fehlerbehandlung verbessern
+-   AI-Agent-Logik aus dem Analyse-Notebook in eigene Komponenten
+    auslagern
+-   weitere Agentenfunktionen schrittweise ergänzen
+-   zusätzliche Data-Engineering-Werkzeuge erst einsetzen, wenn der
+    konkrete Anwendungsfall sie benötigt
 
-### Next Steps
+------------------------------------------------------------------------
 
-Possible next steps include:
-* Improving SQL validation and security
-* Handling a wider range of analytical questions
-* Adding database schema awareness
-* Improving error handling
-* Separating the AI agent logic from the analysis notebook
-* Evaluating when additional data engineering tools are actually needed
+## Verwendete Technologien
 
----
+-   Python
+-   Pandas
+-   Matplotlib
+-   PostgreSQL
+-   pgAdmin 4
+-   SQLAlchemy
+-   Jupyter Notebook
+-   Docker
+-   Apache Superset
+-   OpenAI API
 
+## Projektstatus
+
+Das Projekt wird schrittweise zu einem AI Data Agent weiterentwickelt.
+Der aktuelle Stand umfasst Datenanalyse, persistente Speicherung in
+PostgreSQL, BI-Reporting mit Apache Superset sowie einen ersten
+kontrollierten Natural-Language-to-SQL-Prototyp.
