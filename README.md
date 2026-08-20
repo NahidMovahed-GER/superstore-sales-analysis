@@ -11,20 +11,23 @@ mit natürlichsprachlichen Fragen abgefragt.
 ## Projektübersicht
 
 ``` text
-CSV
- ↓
-Pandas
- ↓
-PostgreSQL
- ├──→ Apache Superset → Dashboard
- ↓
-LLM → SQL-Generierung → Sicherheitsprüfung → PostgreSQL
-                                             ↓
-                                      Abfrageergebnis
-                                             ↓
-                                            LLM
-                                             ↓
-                                  Verständliche Antwort
+CSV → Pandas → PostgreSQL
+                  ├──→ Apache Superset → Dashboard
+                  └──→ Frage in natürlicher Sprache
+                           ↓
+                  Prüfung der Beantwortbarkeit
+                      ↙ JA       NEIN ↘
+              SQL-Generierung    Klare Rückmeldung
+                      ↓
+              Sicherheitsprüfung
+                      ↓
+                  PostgreSQL
+                      ↓
+                Abfrageergebnis
+                      ↓
+                     LLM
+                      ↓
+            Verständliche Antwort
 ```
 
 ## Projektstruktur
@@ -35,10 +38,8 @@ superstore-sales-analysis/
 ├── README.md
 ├── data/
 │   └── Superstore.csv
-│
 ├── notebooks/
 │   └── superstore_sales_analysis.ipynb
-│
 └── docs/
     └── images/
         ├── superstore_linkedin.png
@@ -184,18 +185,24 @@ müssen.
 ``` text
 Frage in natürlicher Sprache
         ↓
-       LLM
+Prüfung der Beantwortbarkeit
         ↓
+      JA / NEIN
+       ↙     ↘
+     JA       NEIN
+      ↓        ↓
+     LLM     Klare Rückmeldung
+      ↓
 Generierte PostgreSQL-Abfrage
-        ↓
+      ↓
 SQL-Sicherheitsprüfung
-        ↓
-   PostgreSQL
-        ↓
- Abfrageergebnis
-        ↓
-       LLM
-        ↓
+      ↓
+PostgreSQL
+      ↓
+Abfrageergebnis
+      ↓
+     LLM
+      ↓
 Verständliche Antwort
 ```
 
@@ -207,10 +214,15 @@ Verständliche Antwort
 
     > Welche Region hatte den höchsten Umsatz?
 
-2.  Die Frage wird zusammen mit Informationen über die Tabelle und
-    relevante Spalten an ein OpenAI-Sprachmodell übergeben.
+2.  Vor der SQL-Generierung prüft ein Sprachmodell anhand der
+    verfügbaren Spalten, ob die Frage mit den vorhandenen Daten
+    grundsätzlich beantwortbar ist.
 
-3.  Das Modell generiert eine passende PostgreSQL-`SELECT`-Abfrage.
+3.  Ist die Frage beantwortbar, wird sie zusammen mit Informationen über
+    die Tabelle und relevante Spalten an das Sprachmodell zur
+    SQL-Generierung übergeben.
+
+4.  Das Modell generiert eine passende PostgreSQL-`SELECT`-Abfrage.
 
     Beispiel:
 
@@ -222,33 +234,84 @@ Verständliche Antwort
     LIMIT 1;
     ```
 
-4.  Vor der Ausführung wird das generierte SQL durch eine
-    Sicherheitsprüfung kontrolliert.
+5.  Vor der Ausführung wird das generierte SQL durch eine
+    Sicherheitsprüfung kontrolliert. Der aktuelle Prototyp erlaubt
+    ausschließlich lesende `SELECT`-Abfragen und soll verhindern, dass
+    generiertes SQL Daten in der Datenbank verändert.
 
-    Der aktuelle Prototyp erlaubt ausschließlich lesende
-    `SELECT`-Abfragen und soll verhindern, dass generiertes SQL Daten in
-    der Datenbank verändert.
+6.  Die validierte Abfrage wird gegen PostgreSQL ausgeführt.
 
-5.  Die validierte Abfrage wird gegen PostgreSQL ausgeführt.
-
-6.  Das Datenbankergebnis wird anschließend an das Sprachmodell
+7.  Das Datenbankergebnis wird anschließend an das Sprachmodell
     übergeben und in eine kurze, verständliche Antwort umgewandelt.
 
     Beispiel:
 
     > Die Region West erzielte mit 725.457,82 den höchsten Umsatz.
 
-### Bisherige Tests
+8.  Ist eine Frage mit den vorhandenen Daten nicht beantwortbar, wird
+    sie nicht an die SQL-Generierung weitergegeben. Stattdessen erhält
+    der Benutzer eine klare Rückmeldung.
 
-Der Prototyp wurde unter anderem mit folgenden Fragen getestet:
+    Beispiel:
+
+    > Diese Frage kann mit den vorhandenen Daten nicht beantwortet
+    > werden.
+
+### Prüfung der Beantwortbarkeit
+
+Der Prototyp wurde um einen zusätzlichen Prüfschritt erweitert.
+
+Bevor eine Frage an die SQL-Generierung weitergegeben wird, erhält das
+Sprachmodell die verfügbaren Spalten der Superstore-Datenbasis als
+Kontext und entscheidet zunächst, ob die Frage damit grundsätzlich
+beantwortbar ist.
+
+Die aktuelle Prüfung ist **LLM-basiert**. Sie ist eine erste zusätzliche
+Kontrollstufe des Prototyps und noch keine vollständige semantische
+Validierung.
+
+### Testbeispiele
+
+#### Beantwortbare Frage
+
+> Welche Region hatte den höchsten Umsatz?
+
+``` text
+JA
+```
+
+Die Frage ist beantwortbar und kann an die SQL-Generierung weitergegeben
+werden.
+
+#### Nicht beantwortbare Frage
+
+> Wie zufrieden waren unsere Kunden im letzten Jahr?
+
+``` text
+NEIN
+```
+
+Da der Datensatz keine Informationen zur Kundenzufriedenheit enthält,
+wird die Frage nicht an die SQL-Generierung weitergegeben.
+
+Stattdessen erhält der Benutzer die Rückmeldung:
+
+``` text
+Diese Frage kann mit den vorhandenen Daten nicht beantwortet werden.
+```
+
+### Bisherige Tests des Natural-Language-to-SQL-Workflows
+
+Der vollständige Ablauf wurde unter anderem mit folgenden beantwortbaren
+Fragen getestet:
 
 -   Welche Kategorie hatte den höchsten Gewinn?
 -   Welche Region hatte den höchsten Umsatz?
 
-Bei beiden Tests wurde der vollständige Ablauf erfolgreich durchgeführt:
-
 ``` text
 Frage
+ ↓
+Prüfung der Beantwortbarkeit
  ↓
 SQL-Generierung
  ↓
@@ -266,9 +329,21 @@ Antwort in natürlicher Sprache
 Der aktuelle Stand ist bewusst ein erster, kontrollierter Prototyp und
 noch kein vollständiger autonomer AI Data Agent.
 
-Der Schwerpunkt liegt zunächst auf einem nachvollziehbaren
-**Natural-Language-to-SQL-Workflow**. Weitere Agentenfunktionen sollen
-schrittweise ergänzt werden.
+Der Prototyp unterstützt derzeit:
+
+-   Fragen in natürlicher Sprache
+-   LLM-basierte Prüfung, ob eine Frage mit den vorhandenen Daten
+    grundsätzlich beantwortbar ist
+-   Generierung von PostgreSQL-`SELECT`-Abfragen
+-   SQL-Sicherheitsprüfung
+-   Ausführung der Abfragen gegen PostgreSQL
+-   Umwandlung der Datenbankergebnisse in verständliche Antworten
+-   klare Rückmeldung bei Fragen, die mit der vorhandenen Datenbasis
+    nicht beantwortet werden können
+
+Der Schwerpunkt liegt weiterhin auf einem nachvollziehbaren und
+kontrollierten **Natural-Language-to-SQL-Workflow**. Weitere
+Agentenfunktionen sollen schrittweise ergänzt werden.
 
 ------------------------------------------------------------------------
 
@@ -292,9 +367,11 @@ schrittweise ergänzt werden.
 Geplante bzw. mögliche Weiterentwicklungen:
 
 -   SQL-Validierung und Sicherheit verbessern
--   weitere analytische Fragen unterstützen
+-   weitere analytische Fragen und Grenzfälle testen
 -   Datenbankschema automatisch berücksichtigen
 -   Fehlerbehandlung verbessern
+-   Zugriff auf freigegebene Tabellen und Spalten stärker kontrollieren
+-   Business-Regeln und KPI-Definitionen berücksichtigen
 -   AI-Agent-Logik aus dem Analyse-Notebook in eigene Komponenten
     auslagern
 -   weitere Agentenfunktionen schrittweise ergänzen
@@ -305,8 +382,8 @@ Geplante bzw. mögliche Weiterentwicklungen:
 
 Das Projekt umfasst aktuell:
 
-**Datenanalyse → PostgreSQL → BI-Reporting → erster
-Natural-Language-to-SQL-Prototyp**
+**Datenanalyse → PostgreSQL → BI-Reporting →
+Natural-Language-to-SQL-Prototyp mit Beantwortbarkeitsprüfung**
 
 Das langfristige Ziel ist die schrittweise Weiterentwicklung zu einem AI
 Data Agent.
